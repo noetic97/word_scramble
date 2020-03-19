@@ -1,34 +1,28 @@
 {
   "name": "word_scramble",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
-    "@testing-library/user-event": "^7.2.1",
-    "react": "^16.13.0",
-    "react-dom": "^16.13.0",
-    "react-scripts": "3.4.0"
+  "version": "1.0.0",
+  "description": "App to keep word scramble score",
+  "main": "server.js",
+  "engines": {
+    "node": "11.15.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "nodemon server.js",
+    "heroku-postbuild": "cd client && npm install && npm run build",
+    "dev": "concurrently --kill-others-on-fail \"nodemon server.js\" \"cd client && npm start\""
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "author": "Joe Heitkamp",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^4.0.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "knex": "^0.20.11",
+    "pg": "^7.18.2"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "concurrently": "^5.1.0",
+    "http-proxy-middleware": "^1.0.3",
+    "nodemon": "^2.0.2"
   }
 }
