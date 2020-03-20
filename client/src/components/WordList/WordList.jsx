@@ -1,17 +1,31 @@
 import React, { Component } from 'react';
+import { Redirect } from "@reach/router";
 
 class WordList extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      loggedIn: false,
       typedWord: '',
+      words: [],
       scramblePhrase: 'Corona Virus Madness',
+      redirect: false,
     }
     this.handleFieldChange = this.handleFieldChange.bind(this);
+    this.fetchWords = this.fetchWords.bind(this);
+    this.setLocalToState = this.setLocalToState.bind(this);
+    this.redirectUser = this.redirectUser.bind(this);
   }
   
   componentDidMount () {
-    console.log("hello world");
+    const localUser = JSON.parse(localStorage.getItem('WS_userStatus'));
+
+    if (localUser) {
+      this.setLocalToState(localUser);
+    } else {
+      this.redirectUser();
+    }
+    // this.fetchWords();
   }
 
   handleFieldChange (e) {
@@ -20,12 +34,47 @@ class WordList extends Component {
     })
   }
   
+  setLocalToState = (data) => {
+    this.setState({
+      loggedIn: data.loggedIn,
+    });
+  }
+  
+  redirectUser = () => {
+  this.setState({ redirect: true });
+}
+
+fetchWords = () => {
+  fetch('api/v1/words-index')
+    .then(res => res.json())
+    .then((words) => {
+      words = words.words; //eslint-disable-line
+      const userName = JSON.parse(localStorage.getItem('WS_userName'));
+
+      if (userName) {
+        const customerWordArray = words.filter((word) => {
+          return word.word === userName;
+        });
+        this.setState({
+          words: customerWordArray,
+        });
+      } else {
+        this.setState({
+          words,
+        });
+      }
+    })
+    .catch(err => console.log(err));
+}
+  
   render() {
-    const {typedWord, scramblePhrase} = this.state;
-    
-    // if (!pokemon.length) {
-    //   return null;
-    // }
+    const {typedWord, scramblePhrase, loggedIn, redirect} = this.state;
+      
+    if (!loggedIn && redirect) {
+      return(
+        <Redirect noThrow to="/login" />
+      ) 
+    }
     
     return (
       <main className="home">

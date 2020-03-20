@@ -1,0 +1,19 @@
+$main-font: Helvetica, sans-serif;
+$second-font: Roboto, sans-serif;
+
+//colors
+$wurth-yellow: rgb(252, 211, 5);
+$wurth-green: rgb(120, 178, 26);
+$wurth-red: rgb(216,0,39);
+$wurth-hover-red: rgba(216,0,39, 0.5);
+$wurth-disabled-red: rgba(216,0,39, 0.3);
+$wurth-disabled-black: rgba(51,51,51, 0.6);
+$wurth-soft-black: rgb(51, 51, 51);
+$wurth-gray-background: rgb(223, 223, 223);
+$wurth-mid-gray-background: rgb(153, 153, 153);
+$wurth-dark-gray-background: rgb(102, 102, 102);
+
+//Media Queries
+$media-phone: "only screen and (max-width : 320px)";
+$media-tablet: "only screen and (max-width : 768px)";
+$media-desktop: "only screen and (max-width : 1200px)";

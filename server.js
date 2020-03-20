@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const bodyParser = require('body-parser');
 
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
@@ -10,6 +11,9 @@ const router = require('./server/router');
 // const client = new FtpClient();
 const port = process.env.PORT || 5000;
 const app = express();
+
+app.use(bodyParser.json({ limit: '50mb', extended: true }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));

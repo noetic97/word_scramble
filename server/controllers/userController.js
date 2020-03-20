@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt'); // bcrypt will encrypt passwords to be saved in db
-const crypto = require('crypto'); // built-in encryption node module
 const { db } = require('../../server');
 
 const salt = bcrypt.genSaltSync();
@@ -14,6 +13,7 @@ const hashPassword = (password) => {
 const findUser = (userReq, res) => {
   return db('users')
     .where({ email: userReq.username })
+    .orWhere({ name: userReq.username})
     .then((data) => {
         if (data.length > 0) {
           Object.assign(data[0], { database: 'users' });
@@ -57,7 +57,10 @@ exports.signin = (req, res) => {
 const createUser = (user) => {
   return db('users')
     .insert(user, '*')
-    .then(data => data);
+    .then(data => {
+      return data;
+    })
+    .catch(error => res.status(500).json({ error }));
 };
 
 exports.signup = (req, res) => {
@@ -67,9 +70,11 @@ exports.signup = (req, res) => {
       delete user.password;
       user.password_digest = hashedPassword;
     })
-    .then(() => createUser(user))
     .then(() => {
-      delete user[0].password_digest;
+      return createUser(user)
+    })
+    .then(() => {
+      delete user.password_digest;
       res.status(201).json({ user });
     })
     .catch(error => res.status(500).json({ error }));
@@ -80,7 +85,7 @@ exports.resetPassword = (req, res) => {
 
   findUser(userReq, res)
     .then((user) => {
-      if (!user) {
+      if (!user.length) {
         return res.status(500).json({ error: 'User not found' });
       }
       return res.status(200).json(user);
@@ -90,6 +95,10 @@ exports.resetPassword = (req, res) => {
 
 exports.updateUserPass = (req, res) => {
   const userReq = req.body;
+  
+  console.log(userReq);
+  const username = userReq.username.includes('@') ? userReq.username.toLowerCase() : userReq.username;
+  userReq.username = username;
 
   findUser(userReq)
     .then((userData) => {
@@ -122,29 +131,11 @@ exports.userIndex = (req, res) => {
     .catch(error => res.status(500).json({ error }));
 };
 
-
-exports.addUser = (req, res) => {
-  const newUser = req.body;
-  return db('users')
-    .insert(newUser, '*')
-    .then(user => res.status(201).json(user))
-    .catch(error => res.status(500).json({ error }));
-};
-
-
-exports.addCustomer = (req, res) => {
-  const customer = req.body;
-  
-  console.log(customer);
-  hashPassword(customer.password)
-    .then((hashedPassword) => {
-      delete customer.password;
-      customer.password_digest = hashedPassword;
-    })
-    .then(() => createCustomer(customer))
-    .then((customerData) => {
-      delete customerData[0].password_digest; //eslint-disable-line
-      res.status(201).json({ customerData: customerData[0] });
+exports.getSingleUser = (req, res) => {
+  const { id } = req.params;
+  db('users').select().where({ id })
+    .then((user) => {
+      return res.status(200).json(user);
     })
     .catch(error => res.status(500).json({ error }));
 };
